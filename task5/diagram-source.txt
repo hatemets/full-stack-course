@@ -1,0 +1,12 @@
+title Visiting a SPA 
+
+user->browser: Opens https://studies.cs.helsinki.fi/exampleapp/spa
+browser->server: GET /exampleapp/spa
+server->browser: HTML
+browser->server: GET /exampleapp/main.css
+server->browser: CSS
+browser->server: GET /exampleapp/spa.js
+server->browser: JS
+browser->server: GET /exampleapp/data.json
+server->browser: JSON
+note over browser: Browser has fetched the necessary data\nand no longer has to reload the page\nas it fetches all the dynamic content with browser JS
