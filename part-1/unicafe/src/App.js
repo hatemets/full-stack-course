@@ -16,11 +16,13 @@ const Overview = ({ good, bad, neutral }) => (
 
 const Statistics = ({ good, bad, neutral }) => {
     // Average is 0 when no reviews have been given (so as to prevent division by 0 returnin NaN)
-    const hasFeedback = () => ((good + bad + neutral) !== 0)
+    const total = () => (good + bad + neutral)
+    const hasFeedback = () => total() !== 0
 
     return (<>
-        <p>Average: { hasFeedback() ? (good - bad) / (good + bad + neutral) : 0 }</p>
-        <p>Positive: { hasFeedback() ? (good / (good + bad + neutral)) * 100 : 0 }%</p>
+        <p>Total reviews: { total() }</p>
+        <p>Average: { hasFeedback() ? (good - bad) / total() : 0 }</p>
+        <p>Positive: { hasFeedback() ? (good / total()) * 100 : 0 }%</p>
     </>)
 }
 
