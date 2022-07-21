@@ -4,17 +4,17 @@ const Title = () => (<h1>Provide feedback</h1>)
 
 const Button = ({ onPress, title }) => (<button onClick={onPress}>{ title }</button>)
 
-const Overview = ({ good, bad, neutral }) => (
+const Statistics = ({ good, bad, neutral }) => (
     <>
         <h2>Statistics</h2>
         <p style={{ color: "green" }}>Good: { good }</p>
         <p style={{ color: "#333" }}>Neutral: { neutral }</p>
         <p style={{ color: "red" }}>Bad: { bad }</p>
-        <Statistics good={good} bad={bad} neutral={neutral} />
+        <Overview good={good} bad={bad} neutral={neutral} />
     </>
 )
 
-const Statistics = ({ good, bad, neutral }) => {
+const Overview = ({ good, bad, neutral }) => {
     // Average is 0 when no reviews have been given (so as to prevent division by 0 returnin NaN)
     const total = () => (good + bad + neutral)
     const hasFeedback = () => total() !== 0
@@ -41,7 +41,10 @@ const App = () => {
             <Button onPress={() => setGood(good + 1)} title="Good" />
             <Button onPress={handleNeutral} title="Neutral" />
             <Button onPress={handleBad} title="Bad" />
-            <Overview good={good} bad={bad} neutral={neutral} />
+            {
+                (good + bad + neutral) > 0 &&
+                    <Statistics good={good} bad={bad} neutral={neutral} />
+            }
         </div>
     )
 }
