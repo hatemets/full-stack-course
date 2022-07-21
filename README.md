@@ -3,6 +3,5 @@ Exercises for the Full Stack Course offered by the University of Helsinki.
 The author of all the solutions in this repository is Mark Heidmets.
 
 
-### To see the solutions for each part, please navigate to the corresponding branch with `git checkout part-<part_number>`.
-#### Example
-`git checkout part-0`
+## NB! For part-0, I submitted the repository as a structure consisting of different branches.
+## I eventually opted for a one-branch approach with different folders for each part, as was suggested by the course staff.
