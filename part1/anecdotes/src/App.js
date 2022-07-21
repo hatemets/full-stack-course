@@ -1,56 +1,50 @@
 import { useState } from "react"
 
-const Title = () => (<h1>Provide feedback</h1>)
-
-const Button = ({ onPress, title }) => (<button onClick={onPress}>{ title }</button>)
-
-const Statistics = ({ good, bad, neutral }) => {
-    const total = () => (good + bad + neutral)
-    const hasFeedback = () => total() !== 0
-    const average = () => hasFeedback() ? (good - bad) / total() : 0
-    const positivePercentage = () => (hasFeedback() ? (good / total()) * 100 : 0) + "%"
-
-    return (<>
-        <h2>Statistics</h2>
-        <table>
-            <tbody>
-                <StatisticLine text="Good" value={good} />
-                <StatisticLine text="Bad" value={neutral} />
-                <StatisticLine text="Neutral" value={bad} />
-                <StatisticLine text="Total" value={total()} />
-                <StatisticLine text="Average" value={average()} />
-                <StatisticLine text="Positive" value={positivePercentage()} />
-            </tbody>
-        </table>
-    </>)
-}
-
-const StatisticLine = ({ text, value }) => (
-    <tr>
-        <td>{ text }</td>
-        <td>{ value }</td>
-    </tr>
-)
-
 const App = () => {
-    const [good, setGood] = useState(0)
-    const [neutral, setNeutral] = useState(0)
-    const [bad, setBad] = useState(0)
+    const initial = [
+        {
+            quote: "If it hurts, do it more often.",
+            votes: 0
+        },
+        {
+            quote: "Adding manpower to a late software project makes it later!",
+            votes: 0
+        },
+        {
+            quote: "The first 90 percent of the code accounts for the first 10 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.",
+            votes: 0
+        },
+        {
+            quote: "Any fool can write code that a computer can understand. Good programmers write code that humans can understand.",
+            votes: 0
+        },
+        {
+            quote: "Premature optimization is the root of all evil.",
+            votes: 0
+        },
+        {
+            quote: "Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.",
+            votes: 0
+        },
+        {
+            quote: "Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients.",
+            votes: 0
+        }
+    ]
 
-    const handleGood = () => setGood(good + 1)
-    const handleNeutral = () => setNeutral(neutral + 1)
-    const handleBad = () => setBad(bad + 1)
+    const [anecdotes, setAnecdotes] = useState(initial)
+    const [selected, setSelected] = useState(0)
+
+    const handleNext = () => setSelected(Math.round(Math.random() * (anecdotes.length - 1)))
+    const handleVote = () => setAnecdotes(anecdotes.map(obj => anecdotes.indexOf(obj) !== selected ? obj : { ...obj, votes: obj.votes + 1 }))
+
 
     return (
         <div>
-            <Title />
-            <Button onPress={() => setGood(good + 1)} title="Good" />
-            <Button onPress={handleNeutral} title="Neutral" />
-            <Button onPress={handleBad} title="Bad" />
-            {
-                (good + bad + neutral) > 0 &&
-                    <Statistics good={good} bad={bad} neutral={neutral} />
-            }
+            <button onClick={handleVote}>Vote</button>
+            <button onClick={handleNext}>Next anecdote</button>
+            <p>Votes: { anecdotes[selected].votes }</p>
+            <p>{ anecdotes[selected].quote }</p>
         </div>
     )
 }
