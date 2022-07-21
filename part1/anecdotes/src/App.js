@@ -44,7 +44,7 @@ const App = () => {
     return (
         <div>
             <Title />
-            <Button onPress={handleGood} title="Good" />
+            <Button onPress={() => setGood(good + 1)} title="Good" />
             <Button onPress={handleNeutral} title="Neutral" />
             <Button onPress={handleBad} title="Bad" />
             {
