@@ -4,14 +4,25 @@ const Title = () => (<h1>Provide feedback</h1>)
 
 const Button = ({ onPress, title }) => (<button onClick={onPress}>{ title }</button>)
 
-const Statistics = ({ good, bad, neutral }) => (
+const Overview = ({ good, bad, neutral }) => (
     <>
         <h2>Statistics</h2>
         <p style={{ color: "green" }}>Good: { good }</p>
         <p style={{ color: "#333" }}>Neutral: { neutral }</p>
         <p style={{ color: "red" }}>Bad: { bad }</p>
+        <Statistics good={good} bad={bad} neutral={neutral} />
     </>
 )
+
+const Statistics = ({ good, bad, neutral }) => {
+    // Average is 0 when no reviews have been given (so as to prevent division by 0 returnin NaN)
+    const hasFeedback = () => ((good + bad + neutral) !== 0)
+
+    return (<>
+        <p>Average: { hasFeedback() ? (good - bad) / (good + bad + neutral) : 0 }</p>
+        <p>Positive: { hasFeedback() ? (good / (good + bad + neutral)) * 100 : 0 }%</p>
+    </>)
+}
 
 const App = () => {
     const [good, setGood] = useState(0)
@@ -28,7 +39,7 @@ const App = () => {
             <Button onPress={() => setGood(good + 1)} title="Good" />
             <Button onPress={handleNeutral} title="Neutral" />
             <Button onPress={handleBad} title="Bad" />
-            <Statistics good={good} bad={bad} neutral={neutral} />
+            <Overview good={good} bad={bad} neutral={neutral} />
         </div>
     )
 }
