@@ -5,7 +5,7 @@ user->browser: Types in the content of the note
 user->browser: Clicks the submit button
 browser->server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note
 note over server: Server receives the post request with\nthe content and adds it to the \narray of existing notes
-server-->browser: 302 Found
+server-->browser: 302 Redirect, asks to HTTP GET /notes
 note over server: Form submission causes the page to reload by default
 browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/notes
 server-->browser: 200 HTML

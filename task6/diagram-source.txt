@@ -1,0 +1,9 @@
+title Creating a note in SPA
+
+user->browser: Types the content of the note
+user->browser: Clicks the submit button
+browser->server: POST /exampleapp/new_note_spa
+note over server: Server receives the content of the note from the browser,\nbut doesn't reload the page
+server->browser: 201 Created (no redirect)
+note over browser: The new note is fetched by the JavaScript in the browser
+browser->user: User can see their note on the list
