@@ -1,5 +1,10 @@
 import { useState } from "react"
 
+const Anecdote = ({ quoteObj }) => (<>
+    <p>Votes: { quoteObj.votes }</p>
+    <p>{ quoteObj.quote }</p>
+</>)
+
 const App = () => {
     const initial = [
         {
@@ -36,15 +41,19 @@ const App = () => {
     const [selected, setSelected] = useState(0)
 
     const handleNext = () => setSelected(Math.round(Math.random() * (anecdotes.length - 1)))
-    const handleVote = () => setAnecdotes(anecdotes.map(obj => anecdotes.indexOf(obj) !== selected ? obj : { ...obj, votes: obj.votes + 1 }))
+    const handleVote = () => {
+        const newState = anecdotes.map(obj => anecdotes.indexOf(obj) !== selected ? obj : { ...obj, votes: obj.votes + 1 })
+        setAnecdotes(newState)
+    }
 
 
     return (
         <div>
             <button onClick={handleVote}>Vote</button>
             <button onClick={handleNext}>Next anecdote</button>
-            <p>Votes: { anecdotes[selected].votes }</p>
-            <p>{ anecdotes[selected].quote }</p>
+            <Anecdote quoteObj={anecdotes[selected]} />
+            <h1>Most popular anecdote:</h1>
+            <Anecdote quoteObj={anecdotes.slice().sort((a, b) => b.votes - a.votes)[0]} />
         </div>
     )
 }
