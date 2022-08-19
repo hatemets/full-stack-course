@@ -1,7 +1,7 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
 
-const fToC = deg => (deg - 32) * 5 / 9
+const kelvinToCelsius = K => K - 273.15
 
 const App = () => {
     useEffect(() => {
@@ -18,17 +18,27 @@ const App = () => {
     const handleQuery = query => {
         setFiltered(allCountries.filter(country => country.name.official.toLowerCase().includes(query.toLowerCase())))
     }
-
-    const renderCountries = () => {
+    
+    useEffect(() => {
+        console.log("running")
         if (filtered.length === 1) {
-            const country = filtered[0]
-
+            const [ country ] = filtered
             const url = `http://api.openweathermap.org/data/2.5/weather?q=${country.capital}&APPID=${process.env.REACT_APP_API_KEY}`
+            console.log(url)
 
             axios
                 .get(url)
-                .then(res => { console.log(res.data); setWeather(res.data) })
+                .then(res => { console.log(res.data.weather[0].icon); setWeather(res.data) })
                 .catch(err => console.error(err))
+        }
+        else {
+            setWeather({})
+        }
+    }, [filtered])
+
+    const renderCountries = () => {
+        if (filtered.length === 1) {
+            const [ country ] = filtered
 
             return (
                 <div>
@@ -43,12 +53,15 @@ const App = () => {
                     </ul>
                     <img src={country.flags.png} alt="Flag" />
 
-                    <div>
-                        <h3>Weather in { country.capital }</h3>
-                        <p>Temperature: { fToC(weather.main.temp) } Celsius</p>
-                        <img src={`http://openweathermap.org/img/wn/${weather.weather.icon}@2x.png`} alt="Weather" />
-                        <p>Wind: { weather.wind.speed } m/s</p>
-                    </div>
+                    {
+                        Object.keys(weather).length > 0 && 
+                            <div>
+                                <h3>Weather in { country.capital }</h3>
+                                <p>Temperature: { parseInt(kelvinToCelsius(weather.main.temp), 10) } C</p>
+                                <img src={`http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`} alt="Weather" />
+                                <p>Wind: { weather.wind.speed } m/s</p>
+                            </div>
+                    }
                 </div>
             )
         }
