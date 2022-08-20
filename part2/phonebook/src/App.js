@@ -1,11 +1,18 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
+import server from "./services/server"
 
-const Person = ({ person }) => {
-    const { name, number } = person
+const Person = ({ person, setPersons, persons }) => {
+    const { name, number, id } = person
+
+    const handleDeletion = () => {
+        window.confirm(`Delete ${name}?`)
+        server.remove(id).then(() => setPersons(persons.filter(person => person.id !== id)))
+    }
+
     return (
         <div>
-            <h4>{ name }, { number }</h4>
+            { name }, { number } <button onClick={handleDeletion}>Delete</button>
         </div>
     )
 }
@@ -21,7 +28,11 @@ const NewPersonForm = ({ newName, setNewName, newNumber, setNewNumber, persons, 
             alert(`${newName} is already added to the phonebook`)
         }
         else {
-            setPersons([...persons, { name: newName, number: newNumber }])
+            const newPerson = { name: newName, number: newNumber }
+            server
+                .add(newPerson)
+                .then(res => res.data)
+                .then(newPerson => setPersons(persons.concat(newPerson)))
         }
     }
 
@@ -65,11 +76,11 @@ const FilterPeopleForm = ({ persons, filtered, setFiltered }) => {
     )
 }
 
-const People = ({ persons }) => {
+const People = ({ persons, setPersons }) => {
     return <>
         <h2>People</h2>
         {
-            persons.map(person => <Person key={person.name} person={person} />)
+            persons.map(person => <Person key={person.name} setPersons={setPersons} persons={persons} person={person} />)
         }
     </>
 }
@@ -96,7 +107,7 @@ const App = () => {
                 <FilterPeopleForm persons={persons} filtered={filtered} setFiltered={setFiltered} />
                 <NewPersonForm newName={newName} setNewName={setNewName} persons={persons} setPersons={setPersons} setNewNumber={setNewNumber} newNumber={newNumber} />
             </div>
-            <People persons={persons} />
+            <People persons={persons} setPersons={setPersons} />
         </div>
     )
 }
