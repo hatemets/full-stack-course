@@ -17,7 +17,7 @@ const Person = ({ person, setPersons, persons }) => {
     )
 }
 
-const NewPersonForm = ({ newName, setNewName, newNumber, setNewNumber, persons, setPersons }) => {
+const NewPersonForm = ({ setError, newName, setMsg, setNewName, newNumber, setNewNumber, persons, setPersons }) => {
     const onSubmit = e => {
         e.preventDefault()
 
@@ -30,10 +30,19 @@ const NewPersonForm = ({ newName, setNewName, newNumber, setNewNumber, persons, 
                 server
                     .update(foundPerson.id, { name: foundPerson.name, number: newNumber })
                     .then(res => res.data)
-                    .then(updatedPerson => setPersons(persons.map(person => person.id !== updatedPerson.id ? person : updatedPerson)))
+                    .then(updatedPerson => {
+                        setPersons(persons.map(person => person.id !== updatedPerson.id ? person : updatedPerson))
+                        setError(false)
+                        setMsg(`${foundPerson.name} updated`)
+                    })
+                    .catch(err => {
+                        setError(true)
+                        setMsg(`${foundPerson.name} is already removed from the server`)
+                    })
             }
             else {
-                alert(`${newName} is already added to the phonebook`)
+                setError(true)
+                setMsg(`${newName} is already added to the phonebook`, true)
             }
         }
         else {
@@ -42,6 +51,9 @@ const NewPersonForm = ({ newName, setNewName, newNumber, setNewNumber, persons, 
                 .add(newPerson)
                 .then(res => res.data)
                 .then(newPerson => setPersons(persons.concat(newPerson)))
+
+            setError(false)
+            setMsg(`${newPerson.name} added`)
         }
     }
 
@@ -94,12 +106,49 @@ const People = ({ persons, setPersons }) => {
     </>
 }
 
+const Notification = ({ msg, isError }) => {
+    const color = isError ? "red" : "green"
+    const styles = {
+        wrapper: {
+            position: "absolute",
+            borderRadius: 32,
+            top: "3rem",
+            width: "80%",
+            left: "10%",
+            border: `2px solid ${color}`,
+            background: "#eee"
+        },
+        text: {
+            fontSize: "1.2rem",
+            color: color,
+            textAlign: "center"
+        },
+    }
+
+    return msg.length > 0
+        ? (
+            <div style={styles.wrapper}>
+                <h3 style={styles.text}>{ msg }</h3>
+            </div>
+        )
+        : <></>
+}
+
 
 const App = () => {
     const [persons, setPersons] = useState([])
     const [newName, setNewName] = useState("")
     const [newNumber, setNewNumber] = useState("")
     const [filtered, setFiltered] = useState([])
+    const [msg, setMsg] = useState("")
+    const [isError, setError] = useState(false)
+
+    useEffect(() => {
+        // Display the notification for 4 seconds
+        setTimeout(() => {
+            setMsg("")
+        }, 4000)
+    }, [msg])
 
     useEffect(() => {
         axios
@@ -114,9 +163,10 @@ const App = () => {
             <h2>Phonebook</h2>
             <div>
                 <FilterPeopleForm persons={persons} filtered={filtered} setFiltered={setFiltered} />
-                <NewPersonForm newName={newName} setNewName={setNewName} persons={persons} setPersons={setPersons} setNewNumber={setNewNumber} newNumber={newNumber} />
+                <NewPersonForm setError={setError} setMsg={setMsg} newName={newName} setNewName={setNewName} persons={persons} setPersons={setPersons} setNewNumber={setNewNumber} newNumber={newNumber} />
             </div>
             <People persons={persons} setPersons={setPersons} />
+            <Notification msg={msg} isError={isError} />
         </div>
     )
 }
