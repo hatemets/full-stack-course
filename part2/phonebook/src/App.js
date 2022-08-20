@@ -40,11 +40,15 @@ const NewPersonForm = ({ newName, setNewName, newNumber, setNewNumber, persons, 
     )
 }
 
-
-const FilterPeopleForm = ({ persons, setPersons, filtered, setFiltered }) => {
+const FilterPeopleForm = ({ persons, filtered, setFiltered }) => {
     const filterPeopleByName = query => {
         // Start filtering people once at least one character is typed
-        query !== "" && setFiltered(persons.filter(person => person.name.toLowerCase().includes(query.toLowerCase())))
+        if (query === "") {
+            setFiltered([])
+        }
+        else {
+            setFiltered(persons.filter(person => person.name.toLowerCase().includes(query.toLowerCase())))
+        }
     }
 
     return (
@@ -80,7 +84,8 @@ const App = () => {
     useEffect(() => {
         axios
             .get("http://localhost:3001/persons")
-            .then(res => setPersons(res.data))
+            .then(res => res.data)
+            .then(persons => setPersons(persons))
             .catch(err => console.error(err))
     }, [])
 
@@ -88,7 +93,7 @@ const App = () => {
         <div>
             <h2>Phonebook</h2>
             <div>
-                <FilterPeopleForm persons={persons} setPersons={setPersons} filtered={filtered} setFiltered={setFiltered} />
+                <FilterPeopleForm persons={persons} filtered={filtered} setFiltered={setFiltered} />
                 <NewPersonForm newName={newName} setNewName={setNewName} persons={persons} setPersons={setPersons} setNewNumber={setNewNumber} newNumber={newNumber} />
             </div>
             <People persons={persons} />
