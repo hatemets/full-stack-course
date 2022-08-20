@@ -1,18 +1,13 @@
 {
   "persons": [
     {
-      "name": "Arto Hellas",
-      "number": "040-123456",
-      "id": 1
-    },
-    {
       "name": "Ada Lovelace",
       "number": "39-44-5323523",
       "id": 2
     },
     {
-      "name": "jaanus",
-      "number": "12`3519235",
+      "name": "James Jacob",
+      "number": "327-2314-1232",
       "id": 3
     }
   ]

@@ -22,10 +22,19 @@ const NewPersonForm = ({ newName, setNewName, newNumber, setNewNumber, persons, 
         e.preventDefault()
 
         // Check for duplicate names
-        if (persons.map(p => p.name).includes(newName)) {
-            setNewName("")
-            setNewNumber("")
-            alert(`${newName} is already added to the phonebook`)
+        if (persons.map(p => p.name.toLowerCase()).includes(newName.toLowerCase())) {
+            const foundPerson = persons.find(person => person.name.toLowerCase() === newName.toLowerCase())
+
+            // If the duplicate name has a new number, update the listing, otherwise notify the user
+            if (newNumber !== foundPerson.number) {
+                server
+                    .update(foundPerson.id, { name: foundPerson.name, number: newNumber })
+                    .then(res => res.data)
+                    .then(updatedPerson => setPersons(persons.map(person => person.id !== updatedPerson.id ? person : updatedPerson)))
+            }
+            else {
+                alert(`${newName} is already added to the phonebook`)
+            }
         }
         else {
             const newPerson = { name: newName, number: newNumber }
