@@ -30,6 +30,7 @@ const people = [
 // Use cross-origin resource sharing (otherwise it wouldn't work on Mozilla Firefox)
 app.use(cors())
 
+// GET
 app.get("/", (req, res) => {
     res.send("hello world")
 })
@@ -51,7 +52,23 @@ app.get("/api/persons/:id", (req, res) => {
     res.send(person ? person : `User with id ${req.params.id} not found`)
 })
 
+
+// DELETE
+app.delete("/api/persons/:id", (req, res) => {
+    const person = people.find(person => person.id === Number(req.params.id))
+
+    if (person) {
+        // Remove the person from the array
+        people.splice(people.indexOf(person), 1)
+        res.send(`Person with id ${req.params.id} deleted successfully!`)
+    }
+    else {
+        res.status(404)
+        res.send(`There does not exist a person with id ${req.params.id}`)
+    }
+})
+
+
 app.listen(port, () => {
     console.log(`app listening on port ${port}`)
 })
-
