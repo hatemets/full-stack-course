@@ -30,6 +30,10 @@ const people = [
 // Use cross-origin resource sharing (otherwise it wouldn't work on Mozilla Firefox)
 app.use(cors())
 
+// Necessary for making POST requests via Postman
+app.use(express.urlencoded())
+app.use(express.json())
+
 // GET
 app.get("/", (req, res) => {
     res.send("hello world")
@@ -65,6 +69,24 @@ app.delete("/api/persons/:id", (req, res) => {
     else {
         res.status(404)
         res.send(`There does not exist a person with id ${req.params.id}`)
+    }
+})
+
+
+// POST
+app.post("/api/persons", (req, res) => {
+    const { name, number } = req.body
+
+    if (!name || !number) {
+        res.status(404).send("Name and/or number missing")
+    }
+    else if (people.map(person => person.name.toLowerCase()).includes(name.toLowerCase())) {
+        res.status(400).send("A person with this name already exists")
+    }
+    else {
+        const newPerson = { name: req.body.name, number: req.body.number ? req.body.number : "" , id: Math.floor(Math.random() * Math.pow(10, 4)) }
+        people.push(newPerson)
+        res.status(201).send(`New person with id ${newPerson.id} created successfully!`)
     }
 })
 
