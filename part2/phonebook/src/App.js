@@ -134,7 +134,6 @@ const Notification = ({ msg, isError }) => {
         : <></>
 }
 
-
 const App = () => {
     const [persons, setPersons] = useState([])
     const [newName, setNewName] = useState("")
@@ -152,7 +151,7 @@ const App = () => {
 
     useEffect(() => {
         axios
-            .get("http://localhost:3001/persons")
+            .get("http://localhost:3001/api/persons")
             .then(res => res.data)
             .then(persons => setPersons(persons))
             .catch(err => console.error(err))
