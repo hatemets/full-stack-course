@@ -1,5 +1,6 @@
 const express = require("express")
 const cors = require("cors")
+const morgan = require("morgan")
 
 const app = express()
 const port = 3001
@@ -27,12 +28,13 @@ const people = [
     }
 ]
 
-// Use cross-origin resource sharing (otherwise it wouldn't work on Mozilla Firefox)
+// Middleware
 app.use(cors())
-
-// Necessary for making POST requests via Postman
-app.use(express.urlencoded())
 app.use(express.json())
+
+morgan.token("body", (req, res) => JSON.stringify(req.body))
+app.use(morgan("tiny :body"))
+
 
 // GET
 app.get("/", (req, res) => {
@@ -52,8 +54,7 @@ app.get("/info", (req, res) => {
 
 app.get("/api/persons/:id", (req, res) => {
     const person = people.find(p => p.id === Number(req.params.id))
-    res.status(404)
-    res.send(person ? person : `User with id ${req.params.id} not found`)
+    res.status(404).send(person ? person : `User with id ${req.params.id} not found`)
 })
 
 
@@ -84,7 +85,8 @@ app.post("/api/persons", (req, res) => {
         res.status(400).send("A person with this name already exists")
     }
     else {
-        const newPerson = { name: req.body.name, number: req.body.number ? req.body.number : "" , id: Math.floor(Math.random() * Math.pow(10, 4)) }
+        // Id is a random number between 0 and 10000
+        const newPerson = { name, number, id: Math.floor(Math.random() * Math.pow(10, 4)) }
         people.push(newPerson)
         res.status(201).send(`New person with id ${newPerson.id} created successfully!`)
     }
