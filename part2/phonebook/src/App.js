@@ -1,12 +1,18 @@
 import { useEffect, useState } from "react"
 import server from "./services/server"
 
-const Person = ({ person, setPersons, persons }) => {
+const Person = ({ setError, setMsg, person, setPersons, persons }) => {
     const { name, number, id } = person
 
     const handleDeletion = () => {
         window.confirm(`Delete ${name}?`)
-        server.remove(id).then(() => setPersons(persons.filter(person => person.id !== id)))
+        server
+            .remove(id)
+            .then(() => setPersons(persons.filter(person => person.id !== id)))
+            .catch(err => {
+                setError(true)
+                setMsg("This person is already deleted")
+            })
     }
 
     return (
@@ -41,10 +47,10 @@ const NewPersonForm = ({ setError, newName, setMsg, setNewName, newNumber, setNe
             }
             else {
                 setError(true)
-                setMsg(`${newName} is already added to the phonebook`, true)
+                setMsg(`${newName} is already added to the phonebook`)
             }
         }
-        else {
+        else if (newName.length > 0 && newNumber.length > 0) {
             const newPerson = { name: newName, number: newNumber }
             server
                 .add(newPerson)
@@ -53,6 +59,10 @@ const NewPersonForm = ({ setError, newName, setMsg, setNewName, newNumber, setNe
 
             setError(false)
             setMsg(`${newPerson.name} added`)
+        }
+        else {
+            setError(true)
+            setMsg("Name or number missing")
         }
     }
 
@@ -72,29 +82,31 @@ const NewPersonForm = ({ setError, newName, setMsg, setNewName, newNumber, setNe
 }
 
 const FilterPeopleForm = ({ persons, filtered, setFiltered }) => {
-    const filterPeopleByName = query => {
+    const [query, setQuery] = useState("")
+
+    useEffect(() => {
         if (query === "") {
             setFiltered(persons)
         }
         else {
             setFiltered(persons.filter(person => person.name.toLowerCase().includes(query.toLowerCase())))
         }
-    }
+    }, [persons, query, setFiltered])
 
     return (
         <>
             <div>
-                Filter shown with <input onChange={e => { filterPeopleByName(e.target.value) }} />
+                Filter shown with <input onChange={e => setQuery(e.target.value)} />
             </div>
         </>
     )
 }
 
-const People = ({ filtered, setPersons }) => {
+const People = ({ setMsg, setError, filtered, persons, setPersons }) => {
     return <>
         <h2>People</h2>
         {
-            filtered.map(person => <Person key={person.name} setPersons={setPersons} person={person} />)
+            filtered.map(person => <Person setMsg={setMsg} setError={setError} key={person.name} persons={persons} setPersons={setPersons} person={person} />)
         }
     </>
 }
@@ -145,7 +157,7 @@ const App = () => {
     useEffect(() => {
         server.getAll()
             .then(res => res.data)
-            .then(persons => setPersons(persons))
+            .then(persons => { setPersons(persons); setFiltered(persons) })
             .catch(err => console.error(err))
     }, [])
 
@@ -156,7 +168,7 @@ const App = () => {
                 <FilterPeopleForm persons={persons} filtered={filtered} setFiltered={setFiltered} />
                 <NewPersonForm setError={setError} setMsg={setMsg} newName={newName} setNewName={setNewName} persons={persons} setPersons={setPersons} setNewNumber={setNewNumber} newNumber={newNumber} />
             </div>
-            <People filtered={filtered} setPersons={setPersons} />
+            <People filtered={filtered} persons={persons} setPersons={setPersons} setError={setError} setMsg={setMsg} />
             <Notification msg={msg} isError={isError} />
         </div>
     )
