@@ -73,9 +73,8 @@ const NewPersonForm = ({ setError, newName, setMsg, setNewName, newNumber, setNe
 
 const FilterPeopleForm = ({ persons, filtered, setFiltered }) => {
     const filterPeopleByName = query => {
-        // Start filtering people once at least one character is typed
         if (query === "") {
-            setFiltered([])
+            setFiltered(persons)
         }
         else {
             setFiltered(persons.filter(person => person.name.toLowerCase().includes(query.toLowerCase())))
@@ -87,20 +86,15 @@ const FilterPeopleForm = ({ persons, filtered, setFiltered }) => {
             <div>
                 Filter shown with <input onChange={e => { filterPeopleByName(e.target.value) }} />
             </div>
-            <div>
-                {
-                    filtered.map(person => <Person key={person.name} person={person} />)
-                }
-            </div>
         </>
     )
 }
 
-const People = ({ persons, setPersons }) => {
+const People = ({ filtered, setPersons }) => {
     return <>
         <h2>People</h2>
         {
-            persons.map(person => <Person key={person.name} setPersons={setPersons} persons={persons} person={person} />)
+            filtered.map(person => <Person key={person.name} setPersons={setPersons} person={person} />)
         }
     </>
 }
@@ -145,7 +139,7 @@ const App = () => {
         // Display the notification for 4 seconds
         setTimeout(() => {
             setMsg("")
-        }, 4000)
+        }, 2000)
     }, [msg])
 
     useEffect(() => {
@@ -162,7 +156,7 @@ const App = () => {
                 <FilterPeopleForm persons={persons} filtered={filtered} setFiltered={setFiltered} />
                 <NewPersonForm setError={setError} setMsg={setMsg} newName={newName} setNewName={setNewName} persons={persons} setPersons={setPersons} setNewNumber={setNewNumber} newNumber={newNumber} />
             </div>
-            <People persons={persons} setPersons={setPersons} />
+            <People filtered={filtered} setPersons={setPersons} />
             <Notification msg={msg} isError={isError} />
         </div>
     )
