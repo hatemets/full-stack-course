@@ -35,6 +35,8 @@ app.use(express.json())
 morgan.token("body", (req, res) => JSON.stringify(req.body))
 app.use(morgan(":method :url :status :body"))
 
+app.use(express.static("build"))
+
 
 // GET
 app.get("/api/persons", (req, res) => {
