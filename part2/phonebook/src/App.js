@@ -1,4 +1,3 @@
-import axios from "axios"
 import { useEffect, useState } from "react"
 import server from "./services/server"
 
@@ -150,8 +149,7 @@ const App = () => {
     }, [msg])
 
     useEffect(() => {
-        axios
-            .get("http://localhost:3001/api/persons")
+        server.getAll()
             .then(res => res.data)
             .then(persons => setPersons(persons))
             .catch(err => console.error(err))
