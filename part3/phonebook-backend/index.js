@@ -33,14 +33,10 @@ app.use(cors())
 app.use(express.json())
 
 morgan.token("body", (req, res) => JSON.stringify(req.body))
-app.use(morgan("tiny :body"))
+app.use(morgan(":method :url :status :body"))
 
 
 // GET
-app.get("/", (req, res) => {
-    res.send("hello world")
-})
-
 app.get("/api/persons", (req, res) => {
     res.json(people)
 })
@@ -88,10 +84,17 @@ app.post("/api/persons", (req, res) => {
         // Id is a random number between 0 and 10000
         const newPerson = { name, number, id: Math.floor(Math.random() * Math.pow(10, 4)) }
         people.push(newPerson)
-        res.status(201).send(`New person with id ${newPerson.id} created successfully!`)
+        res.status(201).send(newPerson)
     }
 })
 
+
+const unknownEndpoint = (req, res) => {
+    res.status(404).send({ error: "Unknown endpoint" })
+}
+
+// In case no previous handler handles the request
+app.use(unknownEndpoint)
 
 app.listen(port, () => {
     console.log(`app listening on port ${port}`)
