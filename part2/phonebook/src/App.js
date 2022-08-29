@@ -42,7 +42,7 @@ const NewPersonForm = ({ setError, newName, setMsg, setNewName, newNumber, setNe
                     })
                     .catch(err => {
                         setError(true)
-                        setMsg(`${foundPerson.name} is already removed from the server`)
+                        setMsg(`${foundPerson.name} already exists`)
                     })
             }
             else {
