@@ -157,7 +157,10 @@ const App = () => {
     useEffect(() => {
         server.getAll()
             .then(res => res.data)
-            .then(persons => { setPersons(persons); setFiltered(persons) })
+            .then(persons => {
+                setPersons(persons)
+                setFiltered(persons)
+            })
             .catch(err => console.error(err))
     }, [])
 
