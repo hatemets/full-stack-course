@@ -3,21 +3,9 @@ const supertest = require("supertest")
 const app = require("../app")
 const Blog = require("../models/blog")
 const api = supertest(app)
+const helper = require("./test_helper")
 
-const initialBlogs = [
-    {
-        title: "My day",
-        author: "Jake",
-        url: "https://someblog.abc",
-        likes: 32
-    },
-    {
-        title: "First date",
-        author: "Donald",
-        url: "https://dingdong.abc",
-        likes: 17
-    }
-]
+const { initialBlogs } = helper
 
 // Ensure that the test database always has the same state
 beforeEach(async () => {
