@@ -45,6 +45,12 @@ test("the first blog is about author's day", async () => {
     expect(response.body[0].title).toBe("My day")
 })
 
+test("verify that blog posts have a unique id", async () => {
+    const response = await api.get("/api/blogs")
+    const contents = await response.body
+    contents.forEach(content => expect(content.id).toBeDefined())
+})
+
 afterAll(() => {
     mongoose.connection.close()
 })

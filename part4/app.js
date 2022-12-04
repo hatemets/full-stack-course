@@ -6,10 +6,8 @@ const mongoose = require("mongoose")
 require("express-async-errors")
 
 const app = express()
-
 app.use(cors())
 app.use(express.json())
-
 const { mongoUrl, port } = config
 
 console.log("Connecting to", mongoUrl)
@@ -18,7 +16,6 @@ mongoose
     .connect(mongoUrl)
     .then(result => console.log("Connection established"))
     .catch(err => console.error(err))
-
 
 app.get("/", (req, res) => {
     res.send("hello Gretsu")
