@@ -92,7 +92,16 @@ test("blog post with url or author missing returns a bad request", async () => {
         .post("/api/blogs")
         .send(blogContent)
         .expect(400)
-}, 15000)
+})
+
+it("should delete a post successfully", async () => {
+    const initialRes = await api.get("/api/blogs")
+    const initialLength = initialRes.body.length
+
+    await api.delete(`/api/blogs/${initialRes.body[0].id}`).expect(204)
+    const updatedRes = await api.get("/api/blogs")
+    expect(updatedRes.body.length).toBe(initialLength - 1)
+})
 
 afterAll(() => {
     mongoose.connection.close()
