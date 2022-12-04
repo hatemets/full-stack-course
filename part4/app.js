@@ -30,7 +30,6 @@ app.get("/api/blogs", (req, res) => {
 })
 
 app.post("/api/blogs", (req, res) => {
-    console.log(req.body)
     const blog = new Blog(req.body)
 
     blog

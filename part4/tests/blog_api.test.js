@@ -45,10 +45,26 @@ test("the first blog is about author's day", async () => {
     expect(response.body[0].title).toBe("My day")
 })
 
-test("verify that blog posts have a unique id", async () => {
+test("all blog posts have an id property", async () => {
     const response = await api.get("/api/blogs")
     const contents = await response.body
     contents.forEach(content => expect(content.id).toBeDefined())
+})
+
+test("adding a blog works", async () => {
+    const blogContent = {
+        title: "new blog",
+        author: "john",
+        url: "https://john.123",
+        likes: 0
+    }
+
+    await api
+        .post("/api/blogs")
+        .send(blogContent)
+
+    const res = await api.get("/api/blogs")
+    expect(res.body.length).toBe(3)
 })
 
 afterAll(() => {
