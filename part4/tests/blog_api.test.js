@@ -5,7 +5,7 @@ const Blog = require("../models/blog")
 const api = supertest(app)
 const helper = require("./test_helper")
 
-const { initialBlogs } = helper
+const { initialBlogs, blogsInDatabase } = helper
 
 // Ensure that the test database always has the same state
 beforeEach(async () => {
@@ -40,6 +40,8 @@ test("all blog posts have an id property", async () => {
 })
 
 test("adding a blog works", async () => {
+    const initialBlogs = await blogsInDatabase()
+
     const blogContent = {
         title: "new blog",
         author: "john",
@@ -51,8 +53,8 @@ test("adding a blog works", async () => {
         .post("/api/blogs")
         .send(blogContent)
 
-    const res = await api.get("/api/blogs")
-    expect(res.body.length).toBe(3)
+    const newBlogs = await blogsInDatabase()
+    expect(newBlogs).toHaveLength(initialBlogs.length + 1)
 })
 
 test("blog post with undefined likes defaults to 0", async () => {
