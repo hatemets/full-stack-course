@@ -1,13 +1,28 @@
 const express = require("express")
 const cors = require("cors")
 const Blog = require("./models/blog")
-require("dotenv").config()
+const config = require("./utils/config")
+const mongoose = require("mongoose")
+require("express-async-errors")
 
 const app = express()
-const port = process.env.port || 3001
 
 app.use(cors())
 app.use(express.json())
+
+const { mongoUrl, port } = config
+
+console.log("Connecting to", mongoUrl)
+
+mongoose
+    .connect(mongoUrl)
+    .then(result => console.log("Connection established"))
+    .catch(err => console.error(err))
+
+
+app.get("/", (req, res) => {
+    res.send("hello Gretsu")
+})
 
 app.get("/api/blogs", (req, res) => {
     Blog
@@ -16,7 +31,8 @@ app.get("/api/blogs", (req, res) => {
             res.json(blogs)
         })
 })
-.post("/api/blogs", (req, res) => {
+
+app.post("/api/blogs", (req, res) => {
     console.log(req.body)
     const blog = new Blog(req.body)
 
