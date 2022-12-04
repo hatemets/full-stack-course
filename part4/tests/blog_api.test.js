@@ -103,6 +103,18 @@ it("should delete a post successfully", async () => {
     expect(updatedRes.body.length).toBe(initialLength - 1)
 })
 
+it("should update the blog post sucessfully", async () => {
+    const initialRes = await api.get("/api/blogs")
+    const blog = initialRes.body[0]
+    blog["author"] = "unga bunga"
+
+    await api.put(`/api/blogs/${blog.id}`).send(blog)
+
+    const updatedRes = await api.get("/api/blogs")
+    const updatedBlog = updatedRes.body.find(el => el.id === blog.id)
+    expect(updatedBlog.author).toBe("unga bunga")
+})
+
 afterAll(() => {
     mongoose.connection.close()
 })
