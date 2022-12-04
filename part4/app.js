@@ -17,10 +17,6 @@ mongoose
     .then(result => console.log("Connection established"))
     .catch(err => console.error(err))
 
-app.get("/", (req, res) => {
-    res.send("hello Gretsu")
-})
-
 app.get("/api/blogs", (req, res) => {
     Blog
         .find({})
@@ -43,30 +39,20 @@ app.post("/api/blogs", (req, res) => {
 })
 
 app.delete("/api/blogs/:id", async (req, res, next) => {
-    try {
-        const result = await Blog.findByIdAndDelete(req.params.id)
-        const status = (result) ? 204 : 404
-        res.status(status).end()
-    }
-    catch (err) {
-        next(err)
-    }
+    const result = await Blog.findByIdAndDelete(req.params.id)
+    const status = (result) ? 204 : 404
+    res.status(status).end()
 })
 
 app.put("/api/blogs/:id", async (req, res, next) => {
-    try {
-        const newBlog = {
-            author: req.body.author,
-            title: req.body.title,
-            likes: req.body.likes,
-            url: req.body.url,
-        }
-        await Blog.findByIdAndUpdate(req.params.id, newBlog)
-        res.json(newBlog)
+    const newBlog = {
+        author: req.body.author,
+        title: req.body.title,
+        likes: req.body.likes,
+        url: req.body.url,
     }
-    catch (err) {
-        next(err)
-    }
+    await Blog.findByIdAndUpdate(req.params.id, newBlog)
+    res.json(newBlog)
 })
 
 app.listen(port, () => {
