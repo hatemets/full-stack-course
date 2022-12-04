@@ -67,6 +67,21 @@ test("adding a blog works", async () => {
     expect(res.body.length).toBe(3)
 })
 
+test("blog post with undefined likes defaults to 0", async () => {
+    const blogContent = {
+        title: "new blog",
+        author: "john",
+        url: "https://john.123"
+    }
+
+    await api
+        .post("/api/blogs")
+        .send(blogContent)
+
+    const res = await api.get("/api/blogs")
+    expect(res.body[res.body.length - 1].likes).toBe(0)
+})
+
 afterAll(() => {
     mongoose.connection.close()
 })
