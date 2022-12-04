@@ -32,11 +32,18 @@ app.get("/api/blogs", (req, res) => {
 app.post("/api/blogs", (req, res) => {
     const blog = new Blog(req.body)
 
-    blog
-        .save()
-        .then(result => {
-            res.status(201).json(result)
-        })
+    console.log('jou')
+    // blog
+    //     .save()
+    //     .then(result => {
+    //         res.status(201).json(result)
+    //     })
+    //     .catch(err => {
+    //         console.log(err)
+    //         res.status(400).json(err)
+    //     })
+
+    res.send("fuck")
 })
 
 app.listen(port, () => {

@@ -82,6 +82,18 @@ test("blog post with undefined likes defaults to 0", async () => {
     expect(res.body[res.body.length - 1].likes).toBe(0)
 })
 
+test("blog post with url or author missing returns a bad request", async () => {
+    const blogContent = {
+        title: "new blog",
+        likes: 5
+    }
+
+    await api
+        .post("/api/blogs")
+        .send(blogContent)
+        .expect(400)
+}, 15000)
+
 afterAll(() => {
     mongoose.connection.close()
 })
