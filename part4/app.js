@@ -3,6 +3,9 @@ const cors = require("cors")
 const Blog = require("./models/blog")
 const config = require("./utils/config")
 const mongoose = require("mongoose")
+
+const usersRouter = require("./controllers/users")
+
 require("express-async-errors")
 
 const app = express()
