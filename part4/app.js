@@ -53,6 +53,22 @@ app.delete("/api/blogs/:id", async (req, res, next) => {
     }
 })
 
+app.put("/api/blogs/:id", async (req, res, next) => {
+    try {
+        const newBlog = {
+            author: req.body.author,
+            title: req.body.title,
+            likes: req.body.likes,
+            url: req.body.url,
+        }
+        await Blog.findByIdAndUpdate(req.params.id, newBlog)
+        res.json(newBlog)
+    }
+    catch (err) {
+        next(err)
+    }
+})
+
 app.listen(port, () => {
     console.log(`Server running on port ${port}`)
 })
