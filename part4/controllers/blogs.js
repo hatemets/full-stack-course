@@ -10,19 +10,13 @@ blogsRouter.get("/", async (req, res) => {
 
 blogsRouter.post("/", async (req, res) => {
     const body = req.body
-    const decodedToken = jwt.verify(body.token, process.env.SECRET)
-
-    if (!decodedToken.id) {
-        return res.status(401).json({ error: "invalid or missing token" })
-    }
-
-    const user = await User.findById(decodedToken.id)
+    const { title, url, author, likes, user } = body
 
     const blog = new Blog({
-        title: body.title,
-        url: body.url,
-        author: body.author,
-        likes: body.likes,
+        title,
+        url,
+        author,
+        likes,
         user: user._id
     })
 
@@ -35,14 +29,8 @@ blogsRouter.post("/", async (req, res) => {
 })
 
 blogsRouter.delete("/:id", async (req, res, next) => {
-    const decodedToken = jwt.verify(req.body.token, process.env.SECRET)
-
-    if (!decodedToken.id) {
-        return res.status(401).json({ error: "invalid or missing token" })
-    }
-
-    const user = await User.findById(decodedToken.id)
     const blog = await Blog.findById(req.params.id)
+    const user = req.body.user
 
     if (!blog.user.id || blog.user.toString() !== user.id.toString()) {
         return res.status(403).json({ error: "insufficient privileges to delete the post" })
