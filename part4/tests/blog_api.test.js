@@ -5,14 +5,12 @@ const Blog = require("../models/blog")
 const api = supertest(app)
 const helper = require("./test_helper")
 
-const { initialBlogs, blogsInDatabase } = helper
-
 // Ensure that the test database always has the same state
 beforeEach(async () => {
     await Blog.deleteMany({})
-    let blogObject = new Blog(initialBlogs[0])
+    let blogObject = new Blog(helper.initialBlogs[0])
     await blogObject.save()
-    blogObject = new Blog(initialBlogs[1])
+    blogObject = new Blog(helper.initialBlogs[1])
     await blogObject.save()
 })
 
@@ -40,7 +38,7 @@ test("all blog posts have an id property", async () => {
 })
 
 test("adding a blog works", async () => {
-    const initialBlogs = await blogsInDatabase()
+    const initialBlogs = await helper.blogsInDatabase()
 
     const blogContent = {
         title: "new blog",

@@ -1,5 +1,4 @@
 require("dotenv").config()
-console.log(process.env.MONGODB_URL)
 
 const mongoUrl = process.env.NODE_ENV === "test"
     ? process.env.TEST_MONGODB_URL
