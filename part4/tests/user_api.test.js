@@ -13,7 +13,7 @@ beforeEach(async () => {
     await User.insertMany(helper.initialUsers)
 })
 
-describe("when there's a single user in the database", () => {
+describe("initial users", () => {
     it("should successfully create a new user", async () => {
         const initialUsers = await helper.usersInDatabase()
 
@@ -34,6 +34,59 @@ describe("when there's a single user in the database", () => {
 
         const usernames = newUsers.map(user => user.username)
         expect(usernames).toContain(newUser.username)
+    })
+
+    it("should display an error message in case of invalid user data", async () => {
+        const initialUsers = await helper.usersInDatabase()
+
+        const newUser = {
+            username: "andrew",
+            name: "jollar",
+            password: "ab"
+        }
+
+        await api
+            .post("")
+            .send(newUser)
+            .expect(403)
+            .expect("Content-Type", /application\/json/)
+
+        const newUsers = await helper.usersInDatabase()
+        expect(newUsers).toHaveLength(initialUsers.length)
+
+        const usernames = newUsers.map(user => user.username)
+        expect(usernames).not.toContain(newUser.username)
+    })
+
+    it("should display an error message in case of a repeating username", async () => {
+        const initialUsers = await helper.usersInDatabase()
+
+        const [first, second] = [
+            {
+                username: "andrew",
+                name: "jollar",
+                password: "abcde"
+            },
+            {
+                username: "andrew",
+                name: "jollar",
+                password: "newpass"
+            }
+        ]
+
+        await api
+            .post("")
+            .send(first)
+            .expect(201)
+            .expect("Content-Type", /application\/json/)
+
+        await api
+            .post("")
+            .send(second)
+            .expect(400)
+
+        const newUsers = await helper.usersInDatabase()
+        expect(newUsers).toHaveLength(initialUsers.length + 1)
     })
 })
 
