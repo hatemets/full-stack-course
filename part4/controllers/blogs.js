@@ -3,12 +3,12 @@ const User = require("../models/user")
 const blogsRouter = require("express").Router()
 const jwt = require("jsonwebtoken")
 
-blogsRouter.get("/api/blogs", async (req, res) => {
+blogsRouter.get("/", async (req, res) => {
     const blogs = await Blog.find({}).populate("user", "-blogs")
     res.json(blogs)
 })
 
-blogsRouter.post("/api/blogs", async (req, res) => {
+blogsRouter.post("/", async (req, res) => {
     const body = req.body
     // const token = getToken(req)
     // const decodedToken = jwt.verify(token, process.env.SECRET)
@@ -36,14 +36,15 @@ blogsRouter.post("/api/blogs", async (req, res) => {
     res.status(201).json(savedBlog)
 })
 
-blogsRouter.delete("/api/blogs/:id", async (req, res, next) => {
+blogsRouter.delete("/:id", async (req, res, next) => {
     const result = await Blog.findByIdAndDelete(req.params.id)
     const status = (result) ? 204 : 404
+    console.log(req.token)
 
     res.status(status).end()
 })
 
-blogsRouter.put("/api/blogs/:id", async (req, res, next) => {
+blogsRouter.put("/:id", async (req, res, next) => {
     const newBlog = {
         author: req.body.author,
         title: req.body.title,
