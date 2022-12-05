@@ -1,25 +1,29 @@
 const Blog = require("../models/blog")
+const User = require("../models/user")
 const blogsRouter = require("express").Router()
 
-blogsRouter.get("/api/blogs", (req, res) => {
-    Blog
-        .find({})
-        .then(blogs => {
-            res.json(blogs)
-        })
+blogsRouter.get("/api/blogs", async (req, res) => {
+    const blogs = await Blog.find({}).populate("user", "-blogs")
+    res.json(blogs)
 })
 
-blogsRouter.post("/api/blogs", (req, res) => {
-    const blog = new Blog(req.body)
+blogsRouter.post("/api/blogs", async (req, res) => {
+    const user = await User.findOne({})
 
-    blog
-        .save()
-        .then(result => {
-            res.status(201).json(result)
-        })
-        .catch(err => {
-            res.status(400).json(err)
-        })
+    const blog = new Blog({
+        title: req.body.title,
+        url: req.body.url,
+        author: req.body.author,
+        likes: req.body.likes,
+        user: user._id
+    })
+
+    const savedBlog = await blog.save()
+
+    user.blogs = user.blogs.concat(savedBlog.id)
+    await user.save()
+
+    res.status(201).json(savedBlog)
 })
 
 blogsRouter.delete("/api/blogs/:id", async (req, res, next) => {

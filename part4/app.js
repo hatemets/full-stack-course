@@ -10,21 +10,21 @@ const blogsRouter = require("./controllers/blogs")
 require("express-async-errors")
 
 const app = express()
+
 app.use(cors())
 app.use(express.json())
 app.use(usersRouter)
 app.use(blogsRouter)
-const { mongoUrl, port } = config
 
-logger.info("Connecting to", mongoUrl)
+logger.info("Connecting to", config.mongoUrl)
 
 mongoose
-    .connect(mongoUrl)
+    .connect(config.mongoUrl)
     .then(result => logger.info("Connection established"))
     .catch(err => logger.error(err))
 
-app.listen(port, () => {
-    logger.info(`Server running on port ${port}`)
+app.listen(config.port, () => {
+    logger.info(`Server running on port ${config.port}`)
 })
 
 module.exports = app
