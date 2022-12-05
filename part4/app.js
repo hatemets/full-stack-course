@@ -2,6 +2,7 @@ const express = require("express")
 const cors = require("cors")
 const config = require("./utils/config")
 const mongoose = require("mongoose")
+const logger = require("./utils/logger")
 
 const usersRouter = require("./controllers/users")
 const blogsRouter = require("./controllers/blogs")
@@ -15,15 +16,15 @@ app.use(usersRouter)
 app.use(blogsRouter)
 const { mongoUrl, port } = config
 
-console.log("Connecting to", mongoUrl)
+logger.info("Connecting to", mongoUrl)
 
 mongoose
     .connect(mongoUrl)
-    .then(result => console.log("Connection established"))
-    .catch(err => console.error(err))
+    .then(result => logger.info("Connection established"))
+    .catch(err => logger.error(err))
 
 app.listen(port, () => {
-    console.log(`Server running on port ${port}`)
+    logger.info(`Server running on port ${port}`)
 })
 
 module.exports = app
