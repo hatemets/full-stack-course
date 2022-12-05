@@ -1,6 +1,5 @@
 const express = require("express")
 const cors = require("cors")
-const Blog = require("./models/blog")
 const config = require("./utils/config")
 const mongoose = require("mongoose")
 

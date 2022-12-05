@@ -25,6 +25,7 @@ blogsRouter.post("/api/blogs", (req, res) => {
 blogsRouter.delete("/api/blogs/:id", async (req, res, next) => {
     const result = await Blog.findByIdAndDelete(req.params.id)
     const status = (result) ? 204 : 404
+
     res.status(status).end()
 })
 
@@ -35,7 +36,9 @@ blogsRouter.put("/api/blogs/:id", async (req, res, next) => {
         likes: req.body.likes,
         url: req.body.url,
     }
+
     await Blog.findByIdAndUpdate(req.params.id, newBlog)
+
     res.json(newBlog)
 })
 
