@@ -1,6 +1,20 @@
 const Blog = require("../models/blog")
 const User = require("../models/user")
 const blogsRouter = require("express").Router()
+const jwt = require("jsonwebtoken")
+
+const getToken = req => {
+    // Get the authorization header from the request
+    const auth = req.get("authorization")
+
+    // Example header: Bearer eyJhbGciOiJIUzI1NiIsInR5c2VybmFtZSI6Im1sdXVra2FpIiwiaW
+    if (auth && auth.toLowerCase().startsWith("bearer ")) {
+        // Return the actual token
+        return auth.substring(7)
+    }
+
+    return null
+}
 
 blogsRouter.get("/api/blogs", async (req, res) => {
     const blogs = await Blog.find({}).populate("user", "-blogs")
@@ -8,13 +22,21 @@ blogsRouter.get("/api/blogs", async (req, res) => {
 })
 
 blogsRouter.post("/api/blogs", async (req, res) => {
-    const user = await User.findOne({})
+    const body = req.body
+    const token = getToken(req)
+    const decodedToken = jwt.verify(token, process.env.SECRET)
+
+    if (!decodedToken.id) {
+        return res.status(401).json({ error: "invalid or missing token"})
+    }
+
+    const user = await User.findById(decodedToken.id)
 
     const blog = new Blog({
-        title: req.body.title,
-        url: req.body.url,
-        author: req.body.author,
-        likes: req.body.likes,
+        title: body.title,
+        url: body.url,
+        author: body.author,
+        likes: body.likes,
         user: user._id
     })
 
