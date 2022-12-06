@@ -5,15 +5,18 @@ const bcrypt = require("bcrypt")
 const initialBlogs = [
     {
         title: "My day",
-        author: "Jake",
         url: "https://someblog.abc",
-        likes: 32
+        likes: 4
     },
     {
         title: "First date",
-        author: "Donald",
-        url: "https://dingdong.abc",
-        likes: 17
+        url: "https://dingdong.com",
+        likes: 7
+    },
+    {
+        title: "How to make money",
+        url: "https://ooga.xyz",
+        likes: 6
     }
 ]
 
@@ -21,12 +24,14 @@ const initialUsers = [
     {
         username: "jax",
         name: "Jaxus",
-        password: "dog123" 
+        password: "dog123",
+        blogs: []
     },
     {
         username: "kata",
         name: "Katarina",
-        password: "hihihoho"
+        password: "hihihoho",
+        blogs: []
     }
 ]
 

@@ -1,6 +1,7 @@
 const mongoose = require("mongoose")
 const jwt = require("jsonwebtoken")
 const User = require("../models/user")
+const logger = require("./logger")
 
 const getToken = req => {
     // Get the authorization header from the request
@@ -23,13 +24,54 @@ const tokenExtractor = (req, res, next) => {
 }
 
 const userExtractor = async (req, res, next) => {
-    // The request contains the token, from which we need to get the user id
-    // No extra information about the user is not provided
-    if (req.body.token) {
-        const decodedToken = jwt.verify(req.body.token, process.env.SECRET)
-        const user = await User.findById(decodedToken.id)
+    const auth = req.get('authorization')
 
-        req.body.user = user
+    // The request contains the token, from which we need to get the user id
+    // No extra information about the user is provided
+    if (auth && auth.toLowerCase().startsWith("bearer")) {
+        const token = auth.substring(7)
+        if (token) {
+            const decodedToken = jwt.verify(token, process.env.SECRET)
+            req.user = await User.findById(decodedToken.id) 
+        }
+        else res.status(401).json({ error: "token missing" })
+    }
+
+    next()
+}
+
+const unknownEndpoint = (req, res) => {
+    res.status(404).send({ error: "unknown endpoint" })
+}
+
+const errorHandler = (err, req, res, next) => {
+    logger.error(err.message)
+
+    switch (err.name) {
+        case "CastError": {
+            res.status(400).json({ error: "malformatted id" })
+            break
+        }
+        case "ValidationError": {
+            res.status(400).json({ error: err.message })
+            break
+        }
+        case "JsonWebTokenError": {
+            res.status(400).json({ error: "invalid token" })
+            break
+        }
+        case "TokenExpiredError": {
+            res.status(400).json({ error: "token expired" })
+            break
+        }
+        case "TokenMissingError": {
+            res.status(401).json({ error: "token missing" })
+            break
+        }
+        // default: {
+        //     res.status(500).json({ error: err.message })
+        //     break
+        // }
     }
 
     next()
@@ -37,5 +79,7 @@ const userExtractor = async (req, res, next) => {
 
 module.exports = {
     tokenExtractor,
-    userExtractor
+    userExtractor,
+    unknownEndpoint,
+    errorHandler
 }
