@@ -24,17 +24,20 @@ const tokenExtractor = (req, res, next) => {
 }
 
 const userExtractor = async (req, res, next) => {
-    const auth = req.get('authorization')
+    const auth = req.get("authorization")
 
     // The request contains the token, from which we need to get the user id
     // No extra information about the user is provided
     if (auth && auth.toLowerCase().startsWith("bearer")) {
         const token = auth.substring(7)
+
         if (token) {
             const decodedToken = jwt.verify(token, process.env.SECRET)
             req.user = await User.findById(decodedToken.id) 
         }
-        else res.status(401).json({ error: "token missing" })
+        else {
+            res.status(401).json({ error: "token missing" })
+        }
     }
 
     next()
@@ -68,10 +71,10 @@ const errorHandler = (err, req, res, next) => {
             res.status(401).json({ error: "token missing" })
             break
         }
-        // default: {
-        //     res.status(500).json({ error: err.message })
-        //     break
-        // }
+        default: {
+            res.status(500).json({ error: err.message })
+            break
+        }
     }
 
     next()

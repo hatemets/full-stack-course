@@ -7,11 +7,12 @@ blogsRouter.get("/", async (req, res) => {
 })
 
 blogsRouter.post("/", async (req, res) => {
-    const body = req.body
+    const { user, body } = req
     const { title, url, likes } = body
-    const user = req.user
 
-    // const
+    if (!user) {
+        return res.status(401).json({ error: "token missing" })
+    }
 
     const blog = new Blog({
         title,
@@ -30,9 +31,12 @@ blogsRouter.post("/", async (req, res) => {
 
 blogsRouter.delete("/:id", async (req, res, next) => {
     const blog = await Blog.findById(req.params.id)
-    const user = req.body.user
+    const user = req.user
 
-    if (!blog.user.id || blog.user.toString() !== user.id.toString()) {
+    if (!user) {
+        return res.status(403).json({ error: "missing user data" })
+    }
+    else if (!blog.user.id || blog.user.toString() !== user.id.toString()) {
         return res.status(403).json({ error: "insufficient privileges to delete the post" })
     }
 

@@ -77,7 +77,7 @@ describe("token-based blog api", () => {
         const blog = {
             title: "new blog",
             url: "https://john.123",
-            user: user,
+            user: user._id,
             likes: 0
         }
 
@@ -92,55 +92,64 @@ describe("token-based blog api", () => {
         expect(newBlogs.find(blog => blog.title === "new blog")).toBeDefined()
     }, 3000)
 
-    test.only("blog post with undefined likes defaults to 0", async () => {
+    test("blog post with undefined likes defaults to 0", async () => {
+        const user = await User.findOne({})
+
         const blogContent = {
             title: "new blog",
-            author: "john",
-            url: "https://john.123"
+            url: "https://john.123",
+            user: user._id
         }
+
+        const token = getToken(user)
 
         await api
             .post("/api/blogs")
             .send(blogContent)
+            .set({ "Authorization": `bearer ${token}` })
 
         const res = await api.get("/api/blogs")
         expect(res.body[res.body.length - 1].likes).toBe(0)
     })
 
+    test("blog post with url or author missing returns a bad request", async () => {
+        const blogContent = {
+            title: "new blog",
+            likes: 5
+        }
+
+        await api
+            .post("/api/blogs")
+            .send(blogContent)
+            .expect(401)
+    })
+
+    it("should delete a post successfully", async () => {
+        const initialRes = await api.get("/api/blogs")
+        const initialLength = initialRes.body.length
+        const token = getToken(await User.findOne({}))
+
+        await api
+            .delete("/api/blogs/" + initialRes.body[0].id)
+            .set({ "Authorization": `bearer ${token}` })
+
+        const updatedRes = await api.get("/api/blogs")
+        expect(updatedRes.body.length).toBe(initialLength - 1)
+    })
+
+    // // TODO: Fix
+    // it.only("should update the blog post sucessfully", async () => {
+    //     const initialRes = await api.get("/api/blogs")
+    //     const blog = initialRes.body[0]
+    //     blog["author"] = "unga bunga"
+
+    //     await api.put(`/api/blogs/${blog.id}`).send(blog)
+
+    //     const updatedRes = await api.get("/api/blogs")
+    //     const updatedBlog = updatedRes.body.find(el => el.id === blog.id)
+    //     expect(updatedBlog.author).toBe("unga bunga")
+    // })
 })
-
-// it("blog post with url or author missing returns a bad request", async () => {
-//     const blogContent = {
-//         title: "new blog",
-//         likes: 5
-//     }
-
-//     await api
-//         .post("/api/blogs")
-//         .send(blogContent)
-//         .expect(400)
-// })
-
-// it("should delete a post successfully", async () => {
-//     const initialRes = await api.get("/api/blogs")
-//     const initialLength = initialRes.body.length
-
-//     await api.delete(`/api/blogs/${initialRes.body[0].id}`).expect(204)
-//     const updatedRes = await api.get("/api/blogs")
-//     expect(updatedRes.body.length).toBe(initialLength - 1)
-// })
-
-// it("should update the blog post sucessfully", async () => {
-//     const initialRes = await api.get("/api/blogs")
-//     const blog = initialRes.body[0]
-//     blog["author"] = "unga bunga"
-
-//     await api.put(`/api/blogs/${blog.id}`).send(blog)
-
-//     const updatedRes = await api.get("/api/blogs")
-//     const updatedBlog = updatedRes.body.find(el => el.id === blog.id)
-//     expect(updatedBlog.author).toBe("unga bunga")
-// })
 
 afterAll(() => {
     mongoose.connection.close()
