@@ -12,6 +12,7 @@ require("express-async-errors")
 const app = express()
 
 app.use(cors())
+app.use(express.static("build"))
 app.use(express.json())
 app.use(middleware.tokenExtractor)
 app.use(middleware.userExtractor)
@@ -25,10 +26,6 @@ mongoose
     .connect(config.mongoUrl)
     .then(result => logger.info("Connection established"))
     .catch(err => logger.error(err))
-
-app.listen(config.port, () => {
-    logger.info(`Server running on port ${config.port}`)
-})
 
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
