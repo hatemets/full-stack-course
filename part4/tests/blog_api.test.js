@@ -94,14 +94,13 @@ describe("token-based blog api", () => {
 
     test("blog post with undefined likes defaults to 0", async () => {
         const user = await User.findOne({})
+        const token = getToken(user)
 
         const blogContent = {
             title: "new blog",
             url: "https://john.123",
             user: user._id
         }
-
-        const token = getToken(user)
 
         await api
             .post("/api/blogs")
@@ -112,7 +111,7 @@ describe("token-based blog api", () => {
         expect(res.body[res.body.length - 1].likes).toBe(0)
     })
 
-    test("blog post with url or author missing returns a bad request", async () => {
+    test("blog post with url missing returns a bad request", async () => {
         const blogContent = {
             title: "new blog",
             likes: 5
@@ -137,7 +136,7 @@ describe("token-based blog api", () => {
         expect(updatedRes.body.length).toBe(initialLength - 1)
     })
 
-    it.only("should update the blog post sucessfully", async () => {
+    it("should update the blog post sucessfully", async () => {
         const blog = await Blog.findOne({ title: helper.initialBlogs[0].title })
         const newTitle = "New title"
         blog["title"] = newTitle
@@ -146,6 +145,22 @@ describe("token-based blog api", () => {
 
         const updatedBlog = await Blog.findOne({ title: newTitle })
         expect(updatedBlog).toBeDefined()
+    })
+
+    it("should fail when adding a blog without proper authorization", async () => {
+        const user = User.findOne({})
+
+        const newBlog = {
+            title: "new blog",
+            url: "newblog.com",
+            likes: 5,
+            user: user._id
+        }
+
+        await api
+            .post("/api/blogs")
+            .send(newBlog)
+            .expect(401)
     })
 })
 
