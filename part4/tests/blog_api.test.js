@@ -137,18 +137,16 @@ describe("token-based blog api", () => {
         expect(updatedRes.body.length).toBe(initialLength - 1)
     })
 
-    // // TODO: Fix
-    // it.only("should update the blog post sucessfully", async () => {
-    //     const initialRes = await api.get("/api/blogs")
-    //     const blog = initialRes.body[0]
-    //     blog["author"] = "unga bunga"
+    it.only("should update the blog post sucessfully", async () => {
+        const blog = await Blog.findOne({ title: helper.initialBlogs[0].title })
+        const newTitle = "New title"
+        blog["title"] = newTitle
 
-    //     await api.put(`/api/blogs/${blog.id}`).send(blog)
+        await api.put(`/api/blogs/${blog.id}`).send(blog)
 
-    //     const updatedRes = await api.get("/api/blogs")
-    //     const updatedBlog = updatedRes.body.find(el => el.id === blog.id)
-    //     expect(updatedBlog.author).toBe("unga bunga")
-    // })
+        const updatedBlog = await Blog.findOne({ title: newTitle })
+        expect(updatedBlog).toBeDefined()
+    })
 })
 
 afterAll(() => {
