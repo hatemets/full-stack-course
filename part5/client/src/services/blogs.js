@@ -5,21 +5,23 @@ let token = null
 
 const getAll = () => {
     const req = axios.get(baseUrl)
-    return req.then(res => res.data).catch(err => {
-        console.log(err)
-    })
+    return req
+        .then(res => res.data)
+        .catch(err => {
+            console.log(err)
+        })
 }
 
-const setToken = (token) => {
-    token = `bearer ${token}`
+const setToken = (rawToken) => {
+    token = `bearer ${rawToken}`
 }
 
 const create = async (newObj) => {
-    const config = {
-        headers: { Authorization: token }
+    const headers = {
+        Authorization: token
     }
 
-    const res = await axios.post(baseUrl, newObj, config)
+    const res = await axios.post(baseUrl, newObj, { headers })
     return res.data
 }
 

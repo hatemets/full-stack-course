@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react"
 import { Blog } from "./components/Blog"
 import { Notificiation } from "./components/Notification"
-import blogService from "./services/blogs"
 import { login } from "./services/login"
+import blogService from "./services/blogs"
 
 const App = () => {
-    const [errorMessage, setErrorMessage] = useState(null)
+    const [notification, setNotification] = useState(null)
     const [blogs, setBlogs] = useState([])
     const [user, setUser] = useState(null)
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
-    const [blogsToShow, setBlogsToShow] = useState([])
 
     const [newBlogTitle, setNewBlogTitle] = useState("")
     const [newBlogUrl, setNewBlogUrl] = useState("")
@@ -26,7 +25,6 @@ const App = () => {
             const user = JSON.parse(loggedUser)
             setUser(user)
             blogService.setToken(user.token)
-            setBlogsToShow(blogs)
         }
     }, [blogs])
 
@@ -41,6 +39,8 @@ const App = () => {
 
         try {
             const res = await blogService.create(newBlog)
+            setBlogs(blogs.concat(res))
+            showNotification({ message: "New blog created", type: "success" })
         }
         catch (e) {
             console.log(e)
@@ -50,6 +50,14 @@ const App = () => {
     const handleBlogChange = (e) => {
     }
 
+    // Display the notification for 3 seconds
+    const showNotification = (notification) => {
+        setNotification(notification)
+
+        setTimeout(() => {
+            setNotification(null)
+        }, 3000)
+    }
 
     const handleLogin = async (e) => {
         e.preventDefault()
@@ -63,13 +71,11 @@ const App = () => {
             setUser(user)
             setUsername("")
             setPassword("")
-            setBlogsToShow(blogs)
+            blogService.setToken(user.token)
+            showNotification({ message: "Logged in", type: "success" })
         }
         catch (err) {
-            setErrorMessage("wrong credentials")
-            setTimeout(() => {
-                setErrorMessage(null)
-            }, 5000)
+            showNotification({ message: "wrong credentials", type: "error" })
         }
     }
 
@@ -78,7 +84,6 @@ const App = () => {
 
         window.localStorage.removeItem("loggedUser")
         setUser(null)
-        setBlogsToShow([])
     }
 
     const loginForm = () => (
@@ -105,7 +110,7 @@ const App = () => {
                 <label htmlFor="url">Url</label>
                 <input name="url" value={newBlogUrl} onChange={({ target }) => setNewBlogUrl(target.value)} />
             </div>
-            <button type="submit">save</button>
+            <button type="submit">Save</button>
         </form>
     )
 
@@ -113,13 +118,15 @@ const App = () => {
         <div>
             <h1>blogs</h1>
 
-            <Notificiation message={errorMessage} />
+            {
+                notification !== null && <Notificiation message={notification.message} type={notification.type} />
+            }
 
             { user === null ?
                     loginForm() :
                     <div>
                         <p>{user.name} logged in</p>
-                        <button onClick={handleLogout}>Logout</button>
+                        <button onClick={handleLogout}>Log out</button>
                         { blogForm() }
                     </div>
             }
@@ -127,7 +134,7 @@ const App = () => {
             <div>
                 <ul>
                     {
-                        blogsToShow.map(blog => <Blog key={blog.id} blog={blog} />)
+                        user && blogs.map(blog => <Blog key={blog.id} blog={blog} />)
                     }
                 </ul>
             </div>
