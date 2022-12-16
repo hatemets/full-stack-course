@@ -1,7 +1,8 @@
 import { useState } from "react"
+import blogService from "../services/blogs"
 
-export const Blog = ({ blog, id }) => {
-    const { title, url, likes, user } = blog
+export const Blog = ({ blog }) => {
+    const { id, title, url, likes, user } = blog
     const [expanded, setExpanded] = useState(false)
 
     const toggleExpansion = () => setExpanded(!expanded)
@@ -15,6 +16,21 @@ export const Blog = ({ blog, id }) => {
         padding: 10
     }
 
+    const handleLike = async (e) => {
+        try {
+            const newBlog = {
+                ...blog,
+                user: user.id,
+                likes: likes + 1
+            }
+
+            await blogService.update(id, newBlog)
+        }
+        catch (err) {
+            console.error(err)
+        }
+    }
+
     return (
         <li style={styles} key={id}>
             <span>{title} </span>
@@ -22,7 +38,7 @@ export const Blog = ({ blog, id }) => {
                 expanded ?
                     <div>
                         <p>Url: {url}</p>
-                        <p>Likes: {likes} <button>Like</button></p>
+                        <p>Likes: {likes} <button onClick={handleLike}>Like</button></p>
                         <p>Author: {user.name}</p>
                         <button onClick={toggleExpansion}>Close</button>
                     </div>

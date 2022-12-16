@@ -3,13 +3,14 @@ import axios from "axios"
 const baseUrl = "http://localhost:3001/api/blogs"
 let token = null
 
-const getAll = () => {
-    const req = axios.get(baseUrl)
-    return req
-        .then(res => res.data)
-        .catch(err => {
-            console.log(err)
-        })
+const getAll = async () => {
+    try {
+        const req = await axios.get(baseUrl)
+        return req.data
+    }
+    catch (err) {
+        console.error(err)
+    }
 }
 
 const setToken = (rawToken) => {
