@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { Blog } from "./components/Blog"
 import { Notificiation } from "./components/Notification"
 import blogService from "./services/blogs"
-import { LoginForm } from "./components/LoginForm"
+import LoginForm from "./components/LoginForm"
 import BlogForm from "./components/BlogForm"
 import Togglable from "./components/Togglable"
 
@@ -46,7 +46,7 @@ const App = () => {
     const handleLike = async (id) => {
         try {
             const newBlog = blogs.find(blog => blog.id === id)
-            newBlog.likes++;
+            newBlog.likes++
 
             // Update the blog in the back-end (user must be ID, as it's expanded in the front-end)
             await blogService.update(id, ({ ...newBlog, user: newBlog.user.id }))
