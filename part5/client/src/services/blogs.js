@@ -13,6 +13,16 @@ const getAll = async () => {
     }
 }
 
+const getById = async (id) => {
+    try {
+        const req = await axios.get(`${baseUrl}/${id}`)
+        return req.data
+    }
+    catch (err) {
+        console.error(err)
+    }
+}
+
 const setToken = (rawToken) => {
     token = `bearer ${rawToken}`
 }
@@ -42,6 +52,7 @@ const remove = async (id) => {
 
 const blogService = {
     getAll,
+    getById,
     setToken,
     create,
     update,

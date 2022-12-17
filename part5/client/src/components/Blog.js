@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-export const Blog = ({
+const Blog = ({
     blog,
     handleLike,
     handleBlogDeletion
@@ -20,14 +20,20 @@ export const Blog = ({
     }
 
     return (
-        <li style={styles} key={id}>
-            <span>{title} </span>
+        <li
+            style={styles}
+            key={id}
+        >
+            <div className="preview">
+                <p>Title: {title}</p>
+                <p>Author: {user.name}</p>
+            </div>
+
             {
                 expanded ?
-                    <div>
+                    <div className="expanded-content">
                         <p>Url: {url}</p>
-                        <p>Likes: {likes} <button onClick={() => handleLike(id)}>Like</button></p>
-                        <p>Author: {user.name}</p>
+                        <p>Likes: {likes} <button className="like-button" onClick={() => handleLike(id)}>Like</button></p>
                         <button
                             style={{
                                 backgroundColor: "crimson",
@@ -36,10 +42,18 @@ export const Blog = ({
                             }}
                             onClick={() => handleBlogDeletion(id)}
                         >Delete</button>
-                        <button onClick={toggleExpansion}>Close</button>
+                        <button
+                            className="close-button"
+                            onClick={toggleExpansion}
+                        >Close</button>
                     </div>
-                    : <button onClick={toggleExpansion}>View</button>
+                    : <button
+                        className="expand-button"
+                        onClick={toggleExpansion}
+                    >View</button>
             }
         </li>
     )
 }
+
+export default Blog

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
-import { Blog } from "./components/Blog"
 import { Notificiation } from "./components/Notification"
+import Blog from "./components/Blog"
 import blogService from "./services/blogs"
 import LoginForm from "./components/LoginForm"
 import BlogForm from "./components/BlogForm"
@@ -73,6 +73,40 @@ const App = () => {
         }
     }
 
+    const handleNewBlog = async (e) => {
+        try {
+            e.preventDefault()
+
+            const newBlogTitle = e.target.elements[0].value
+            const newBlogUrl = e.target.elements[1].value
+
+            const newBlog = {
+                title: newBlogTitle,
+                url: newBlogUrl,
+                likes: 0
+            }
+
+            const res = await blogService.create(newBlog)
+
+            // Returned blog must have the user object instead of the id
+            setBlogs(blogs.concat(({
+                ...res,
+                user: {
+                    id: res.user,
+                    name: user.name,
+                    username: user.username
+                }
+            })))
+
+            showNotification({ message: "New blog created", type: "success" })
+
+            blogFormRef.current.toggleVisibility()
+        }
+        catch (e) {
+            console.log(e)
+        }
+    }
+
     return (
         <div>
             <h1>Blogs</h1>
@@ -91,7 +125,10 @@ const App = () => {
 
                     {
                         <Togglable buttonLabel={"New blog"} ref={blogFormRef}>
-                            <BlogForm blogFormRef={blogFormRef} blogs={blogs} setBlogs={setBlogs} showNotification={showNotification} />
+                            <BlogForm
+                            // blogFormRef={blogFormRef} blogs={blogs} setBlogs={setBlogs} showNotification={showNotification}
+                                handleNewBlog={handleNewBlog}
+                            />
                         </Togglable>
                     }
                 </div>
