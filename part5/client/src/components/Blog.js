@@ -3,7 +3,8 @@ import blogService from "../services/blogs"
 
 export const Blog = ({
     blog,
-    handleLike
+    handleLike,
+    handleBlogDeletion
 }) => {
     const { id, title, url, likes, user } = blog
     const [expanded, setExpanded] = useState(false)
@@ -28,6 +29,14 @@ export const Blog = ({
                         <p>Url: {url}</p>
                         <p>Likes: {likes} <button onClick={() => handleLike(id)}>Like</button></p>
                         <p>Author: {user.name}</p>
+                        <button
+                            style={{
+                                backgroundColor: "crimson",
+                                color: "#ddd",
+                                fontWeight: "bold"
+                            }}
+                            onClick={() => handleBlogDeletion(id)}
+                        >Delete</button>
                         <button onClick={toggleExpansion}>Close</button>
                     </div>
                     : <button onClick={toggleExpansion}>View</button>

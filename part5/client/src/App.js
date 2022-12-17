@@ -59,6 +59,20 @@ const App = () => {
         }
     }
 
+    const handleBlogDeletion = async (id) => {
+        try {
+            const confirmation = window.confirm("Do you really wish to delete this post?")
+
+            if (confirmation) {
+                await blogService.remove(id)
+                setBlogs(blogs.filter(blog => blog.id !== id))
+            }
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+
     return (
         <div>
             <h1>Blogs</h1>
@@ -86,7 +100,14 @@ const App = () => {
             <div>
                 <ul style={{ padding: 0 }}>
                     {
-                        user && blogs.map(blog => <Blog key={blog.id} blog={blog} handleLike={handleLike} />)
+                        user && blogs
+                            .sort((blog1, blog2) => blog2.likes - blog1.likes) // Sort by the number of likes (descending)
+                            .map(blog => <Blog
+                                key={blog.id}
+                                blog={blog}
+                                handleLike={handleLike}
+                                handleBlogDeletion={handleBlogDeletion}
+                            />)
                     }
                 </ul>
             </div>
