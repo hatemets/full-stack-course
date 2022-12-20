@@ -23,6 +23,7 @@ const Blog = ({
         <li
             style={styles}
             key={id}
+            id={Math.round(Math.random() * Math.pow(10, 6))}
         >
             <div className="preview">
                 <p>Title: {title}</p>
@@ -35,6 +36,7 @@ const Blog = ({
                         <p>Url: {url}</p>
                         <p>Likes: {likes} <button className="like-button" onClick={() => handleLike(id)}>Like</button></p>
                         <button
+                            className="delete"
                             style={{
                                 backgroundColor: "crimson",
                                 color: "#ddd",

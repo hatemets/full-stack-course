@@ -133,7 +133,7 @@ const App = () => {
             }
 
             <div>
-                <ul style={{ padding: 0 }}>
+                <ul className="blogs" style={{ padding: 0 }}>
                     {
                         user && blogs
                             .sort((blog1, blog2) => blog2.likes - blog1.likes) // Sort by the number of likes (descending)

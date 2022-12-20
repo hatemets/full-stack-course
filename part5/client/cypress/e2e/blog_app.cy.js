@@ -43,10 +43,7 @@ describe("blog app", function() {
 
     describe("when logged in", function() {
         beforeEach(function() {
-            cy.login({
-                username: "testuser",
-                password: "test123"
-            })
+            cy.login({ username: "testuser", password: "test123" })
         })
 
         it("should let the user add a new blog", function() {
@@ -59,11 +56,8 @@ describe("blog app", function() {
             cy.contains("View")
         })
 
-        it.only("should let the user like a blog", function() {
-            cy.addBlog({
-                title: "Test blog",
-                url: "Test url"
-            })
+        it("should let the user like a blog", function() {
+            cy.addBlog({ title: "Test blog", url: "Test url" })
 
             cy.get(".expand-button").click()
             cy.get(".like-button").click()
@@ -73,6 +67,51 @@ describe("blog app", function() {
             cy.get(".like-button").click()
 
             cy.contains("Likes: 2")
+        })
+
+        it("should let the user delete a blog they created", function() {
+            cy.addBlog({ title: "Test blog", url: "Test url" })
+
+            cy.get(".expand-button").click()
+            cy.get(".delete").click()
+
+            cy.get("ul.blogs").should("not.contain", "Test blog")
+        })
+
+        it.only("should order blogs by likes", function() {
+            cy.addBlog({ title: "Blog 1", url: "Test url" })
+            cy.addBlog({ title: "Blog 2", url: "Test url" })
+            cy.addBlog({ title: "Blog 3", url: "Test url" })
+            cy.addBlog({ title: "Blog 4", url: "Test url" })
+
+            for (let i = 0; i < 4; ++i) {
+                cy.get(`li:nth-child(${i+1}) .expand-button`).click()
+                cy.wait(200)
+            }
+
+            // 3 likes to blog 3
+            cy.likeBlog(3)
+            cy.likeBlog(1)
+            cy.likeBlog(1)
+
+            cy.get("li:nth-child(1)").should("contain", "Blog 3").should("contain", "Likes: 3")
+
+            // 1 like to blog 4
+            cy.likeBlog(4)
+
+            cy.get("li:nth-child(2)").should("contain", "Blog 4").should("contain", "Likes: 1")
+
+            // 4 likes to blog 1
+            cy.likeBlog(3)
+            cy.likeBlog(3)
+            cy.likeBlog(2)
+            cy.likeBlog(2)
+
+            // Final order should be: blog 1, blog 3, blog 4, blog 2
+            cy.get("li:nth-child(1)").should("contain", "Blog 1").should("contain", "Likes: 4")
+            cy.get("li:nth-child(2)").should("contain", "Blog 3").should("contain", "Likes: 3")
+            cy.get("li:nth-child(3)").should("contain", "Blog 4").should("contain", "Likes: 1")
+            cy.get("li:nth-child(4)").should("contain", "Blog 2").should("contain", "Likes: 0")
         })
     })
 })
