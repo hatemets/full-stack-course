@@ -6,11 +6,9 @@ Cypress.Commands.add("login", ({ username, password }) => {
         })
 })
 
-Cypress.Commands.add("addBlog", ({
-    title,
-    url,
-    userId
-}) => {
+Cypress.Commands.add("addBlog", ({ title, url }) => {
+    const userId = JSON.parse(localStorage.getItem("loggedUser")).id
+
     const newBlog = {
         title,
         url,
