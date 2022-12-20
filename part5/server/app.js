@@ -11,6 +11,14 @@ require("express-async-errors")
 
 const app = express()
 
+
+logger.info(`Connecting to ${config.mongoUri}`)
+
+mongoose
+    .connect(config.mongoUri)
+    .then(res => logger.info("Connection established"))
+    .catch(err => logger.error(err))
+
 app.use(cors())
 app.use(express.static("build"))
 app.use(express.json())
@@ -21,12 +29,10 @@ app.use(usersRouter)
 app.use("/api/blogs", blogsRouter)
 app.use("/api/login", loginRouter)
 
-logger.info("Connecting to", config.mongoUrl)
-
-mongoose
-    .connect(config.mongoUrl)
-    .then(result => logger.info("Connection established"))
-    .catch(err => logger.error(err))
+if (process.env.NODE_ENV === "test") {
+    const testRouter = require("./controllers/testing")
+    app.use("/api/testing", testRouter)
+}
 
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
