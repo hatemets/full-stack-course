@@ -116,9 +116,7 @@ const App = () => {
             }
 
             { user === null ?
-                <Togglable buttonLabel={"Log in"}>
-                    <LoginForm setUser={setUser} showNotification={showNotification} />
-                </Togglable>
+                <LoginForm setUser={setUser} showNotification={showNotification} />
                 :
                 <div>
                     <p>{user.name} logged in <button onClick={handleLogout}>Log out</button></p>
